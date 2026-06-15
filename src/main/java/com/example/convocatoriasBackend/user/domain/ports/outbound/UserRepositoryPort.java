@@ -8,9 +8,15 @@ import java.util.Optional;
 public interface UserRepositoryPort {
 
     User saveUser(User user);
+
     List<User> findAll();
-    User updateUser(User user);
+
+    User updateUser(Long id, User user);
+
     Optional<User> findByEmail(String email);
+
+    Optional<User> findById(Long id);
+
     void deleteUser(Long id);
 
 }
