@@ -32,5 +32,29 @@ public class DataInitializer implements CommandLineRunner {
             userRepositoryPort.saveUser(admin);
             System.out.println("Default admin user created: admin@usco.edu.co / admin123");
         }
+
+        if (userRepositoryPort.findByEmail("docente@usco.edu.co").isEmpty()) {
+            User docente = new User();
+            docente.setIdentification("2000000000");
+            docente.setName("Docente Principal");
+            docente.setEmail("docente@usco.edu.co");
+            docente.setPassword(passwordEncoder.encode("docente123"));
+            docente.setRole(RoleType.DOCENTE);
+            docente.setStatus(StatusType.ACTIVO);
+            userRepositoryPort.saveUser(docente);
+            System.out.println("Default docente user created: docente@usco.edu.co / docente123");
+        }
+
+        if (userRepositoryPort.findByEmail("estudiante@usco.edu.co").isEmpty()) {
+            User estudiante = new User();
+            estudiante.setIdentification("3000000000");
+            estudiante.setName("Estudiante Principal");
+            estudiante.setEmail("estudiante@usco.edu.co");
+            estudiante.setPassword(passwordEncoder.encode("estudiante123"));
+            estudiante.setRole(RoleType.ESTUDIANTE);
+            estudiante.setStatus(StatusType.ACTIVO);
+            userRepositoryPort.saveUser(estudiante);
+            System.out.println("Default estudiante user created: estudiante@usco.edu.co / estudiante123");
+        }
     }
 }

@@ -75,7 +75,7 @@ public class ConvocationController {
                 request.getDescription(),
                 request.getStartDate(),
                 request.getFinishDate(),
-                request.getCuposDisponibles(),
+                request.getSpotsAvailable(),
                 request.getStatus(),
                 cats
         );
