@@ -12,7 +12,7 @@ export interface LoginResponse {
   role: 'ADMINISTRADOR' | 'DOCENTE' | 'ESTUDIANTE';
 }
 
-export interface Usuario {
+export interface User {
   id?: number;
   identification: string;
   name: string;
@@ -22,35 +22,35 @@ export interface Usuario {
   status: 'ACTIVO' | 'INACTIVO';
 }
 
-export interface Categoria {
+export interface Category {
   id?: number;
-  nombre: string;
+  name: string;
 }
 
-export interface Convocatoria {
+export interface Convocation {
   id?: number;
-  nombre: string;
-  descripcion: string;
-  fechaInicio: string;
-  fechaFin: string;
-  cuposDisponibles: number;
-  estado: 'BORRADOR' | 'PUBLICADA' | 'CERRADA';
-  categoriaIds?: number[];
-  categorias?: Categoria[];
+  name: string;
+  description: string;
+  startDate: string;
+  finishDate: string;
+  spotsAvailable: number;
+  status: 'BORRADOR' | 'PUBLICADA' | 'CERRADA';
+  categoryIds?: number[];
+  categories?: Category[];
 }
 
-export interface Postulacion {
+export interface Postulation {
   id?: number;
-  estudianteId: number;
-  convocatoriaId: number;
-  estado?: 'PENDIENTE' | 'APROBADA' | 'RECHAZADA';
-  fechaPostulacion?: string;
-  estudiante?: Usuario;
-  convocatoria?: Convocatoria;
+  studentId: number;
+  convocationId: number;
+  status?: 'PENDIENTE' | 'APROBADA' | 'RECHAZADA';
+  postulationDate?: string;
+  student?: User;
+  convocation?: Convocation;
 }
 
-export interface CambioEstadoPostulacion {
-  estado: 'PENDIENTE' | 'APROBADA' | 'RECHAZADA';
+export interface ChangeStatusPostulation {
+  status: 'PENDIENTE' | 'APROBADA' | 'RECHAZADA';
 }
 
 export interface Toast {

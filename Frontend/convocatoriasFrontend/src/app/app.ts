@@ -30,8 +30,8 @@ export class App {
 
   toastIcon(type: string): string {
     const icons: Record<string, string> = {
-      success: '✅', error: '❌', warning: '⚠️', info: 'ℹ️'
+      success: '', error: '', warning: '', info: ''
     };
-    return icons[type] || 'ℹ️';
+    return icons[type] || '';
   }
 }
