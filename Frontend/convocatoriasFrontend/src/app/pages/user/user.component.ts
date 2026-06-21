@@ -1,12 +1,11 @@
-// src/app/pages/usuarios/usuarios.component.ts
 import { Component, inject, signal, OnInit, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ApiService } from '../../services/api.service';
 import { ToastService } from '../../services/toast.service';
-import { Usuario } from '../../models/models';
+import { User } from '../../models/models';
 
-const EMPTY_USER = (): Usuario => ({
+const EMPTY_USER = (): User => ({
   identification: '', name: '', email: '',
   password: '', role: 'ESTUDIANTE', status: 'ACTIVO'
 });
@@ -23,14 +22,14 @@ const EMPTY_USER = (): Usuario => ({
           <p>Administra los usuarios del sistema. Solo accesible para administradores.</p>
         </div>
         <div class="page-header-actions">
-          <button class="btn btn-primary" (click)="openCreate()">➕ Nuevo Usuario</button>
+          <button class="btn btn-primary" (click)="openCreate()">Nuevo Usuario</button>
         </div>
       </div>
 
       <!-- Toolbar -->
       <div class="toolbar">
         <div class="search-input-wrapper">
-          <span class="search-icon">🔍</span>
+          <span class="search-icon"></span>
           <input class="form-control search-input" type="text"
                  placeholder="Buscar por nombre, email o identificación..."
                  [(ngModel)]="search" (ngModelChange)="onSearch()">
@@ -52,7 +51,6 @@ const EMPTY_USER = (): Usuario => ({
       <div class="card">
         <div class="card-header">
           <div class="card-title">
-            <span>👥</span>
             Usuarios registrados
           </div>
           <span class="text-sm text-muted">{{ filtered().length }} usuarios</span>
@@ -61,7 +59,7 @@ const EMPTY_USER = (): Usuario => ({
           <div class="loading-spinner"><div class="spinner"></div></div>
         } @else if (filtered().length === 0) {
           <div class="empty-state">
-            <div class="empty-state-icon">👤</div>
+            <div class="empty-state-icon"></div>
             <h3>Sin usuarios</h3>
             <p>No se encontraron usuarios con los filtros actuales.</p>
           </div>
@@ -94,12 +92,11 @@ const EMPTY_USER = (): Usuario => ({
                     </td>
                     <td>
                       <div style="display:flex; gap:6px;">
-                        <button class="btn btn-ghost btn-sm btn-icon" title="Editar" (click)="openEdit(u)">✏️</button>
-                        <button class="btn btn-ghost btn-sm btn-icon" title="{{ u.status === 'ACTIVO' ? 'Desactivar' : 'Activar' }}"
-                                (click)="toggleStatus(u)">
-                          {{ u.status === 'ACTIVO' ? '🔴' : '🟢' }}
+                        <button class="btn btn-ghost btn-sm" (click)="openEdit(u)">Editar</button>
+                        <button class="btn btn-ghost btn-sm" (click)="toggleStatus(u)">
+                          {{ u.status === 'ACTIVO' ? 'Desactivar' : 'Activar' }}
                         </button>
-                        <button class="btn btn-ghost btn-sm btn-icon" title="Eliminar" (click)="confirmDelete(u)">🗑️</button>
+                        <button class="btn btn-ghost btn-sm" (click)="confirmDelete(u)">Eliminar</button>
                       </div>
                     </td>
                   </tr>
@@ -116,7 +113,7 @@ const EMPTY_USER = (): Usuario => ({
       <div class="modal-overlay" (click)="closeModal()">
         <div class="modal" (click)="$event.stopPropagation()">
           <div class="modal-header">
-            <span class="modal-title">{{ editingId() ? '✏️ Editar Usuario' : '➕ Crear Usuario' }}</span>
+            <span class="modal-title">{{ editingId() ? 'Editar Usuario' : 'Crear Usuario' }}</span>
             <button class="modal-close" (click)="closeModal()">✕</button>
           </div>
           <div class="modal-body">
@@ -165,7 +162,7 @@ const EMPTY_USER = (): Usuario => ({
               <div class="form-actions">
                 <button type="button" class="btn btn-ghost" (click)="closeModal()">Cancelar</button>
                 <button type="submit" class="btn btn-primary" [disabled]="saving()">
-                  @if (saving()) { Guardando... } @else { 💾 Guardar }
+                  @if (saving()) { Guardando... } @else { Guardar }
                 </button>
               </div>
             </form>
@@ -179,12 +176,12 @@ const EMPTY_USER = (): Usuario => ({
       <div class="modal-overlay" (click)="showConfirm.set(false)">
         <div class="modal" style="max-width:420px;" (click)="$event.stopPropagation()">
           <div class="modal-header">
-            <span class="modal-title">⚠️ Confirmar eliminación</span>
+            <span class="modal-title">Confirmar eliminación</span>
             <button class="modal-close" (click)="showConfirm.set(false)">✕</button>
           </div>
           <div class="modal-body">
             <div class="confirm-dialog">
-              <div class="confirm-icon">🗑️</div>
+              <div class="confirm-icon"></div>
               <div class="confirm-title">¿Eliminar usuario?</div>
               <div class="confirm-message">
                 Se eliminará a <strong>{{ deleteTarget()?.name }}</strong>. Esta acción no se puede deshacer.
@@ -192,7 +189,7 @@ const EMPTY_USER = (): Usuario => ({
               <div class="confirm-actions">
                 <button class="btn btn-ghost" (click)="showConfirm.set(false)">Cancelar</button>
                 <button class="btn btn-danger" (click)="deleteUsuario()" [disabled]="saving()">
-                  @if (saving()) { Eliminando... } @else { 🗑️ Eliminar }
+                  @if (saving()) { Eliminando... } @else { Eliminar }
                 </button>
               </div>
             </div>
@@ -202,22 +199,22 @@ const EMPTY_USER = (): Usuario => ({
     }
   `,
 })
-export class UsuariosComponent implements OnInit {
+export class UserComponent implements OnInit {
   private api = inject(ApiService);
   private toast = inject(ToastService);
 
-  usuarios = signal<Usuario[]>([]);
+  usuarios = signal<User[]>([]);
   loading = signal(true);
   saving = signal(false);
   showModal = signal(false);
   showConfirm = signal(false);
   editingId = signal<number | null>(null);
-  deleteTarget = signal<Usuario | null>(null);
+  deleteTarget = signal<User | null>(null);
   search = '';
   filterRole = '';
   filterStatus = '';
-  form: Usuario = EMPTY_USER();
-  private _filtered = signal<Usuario[]>([]);
+  form: User = EMPTY_USER();
+  private _filtered = signal<User[]>([]);
   readonly filtered = this._filtered.asReadonly();
 
   async ngOnInit() {
@@ -227,7 +224,7 @@ export class UsuariosComponent implements OnInit {
   async load() {
     this.loading.set(true);
     try {
-      const data = await this.api.getUsuarios();
+      const data = await this.api.getUser();
       this.usuarios.set(data);
       this.onSearch();
     } catch (e: any) {
@@ -252,7 +249,7 @@ export class UsuariosComponent implements OnInit {
     this.showModal.set(true);
   }
 
-  openEdit(u: Usuario) {
+  openEdit(u: User) {
     this.form = { ...u, password: '' };
     this.editingId.set(u.id!);
     this.showModal.set(true);
@@ -266,10 +263,10 @@ export class UsuariosComponent implements OnInit {
       const payload = { ...this.form };
       if (this.editingId() && !payload.password) delete payload.password;
       if (this.editingId()) {
-        await this.api.updateUsuario(this.editingId()!, payload);
+        await this.api.updateUser(this.editingId()!, payload);
         this.toast.success('Usuario actualizado correctamente');
       } else {
-        await this.api.createUsuario(payload);
+        await this.api.createUser(payload);
         this.toast.success('Usuario creado correctamente');
       }
       this.closeModal();
@@ -281,10 +278,10 @@ export class UsuariosComponent implements OnInit {
     }
   }
 
-  async toggleStatus(u: Usuario) {
+  async toggleStatus(u: User) {
     try {
-      const updated: Usuario = { ...u, status: u.status === 'ACTIVO' ? 'INACTIVO' : 'ACTIVO' };
-      await this.api.updateUsuario(u.id!, updated);
+      const updated: User = { ...u, status: u.status === 'ACTIVO' ? 'INACTIVO' : 'ACTIVO' };
+      await this.api.updateUser(u.id!, updated);
       this.toast.success(`Usuario ${updated.status === 'ACTIVO' ? 'activado' : 'desactivado'}`);
       await this.load();
     } catch (e: any) {
@@ -292,7 +289,7 @@ export class UsuariosComponent implements OnInit {
     }
   }
 
-  confirmDelete(u: Usuario) {
+  confirmDelete(u: User) {
     this.deleteTarget.set(u);
     this.showConfirm.set(true);
   }
@@ -301,7 +298,7 @@ export class UsuariosComponent implements OnInit {
     if (!this.deleteTarget()) return;
     this.saving.set(true);
     try {
-      await this.api.deleteUsuario(this.deleteTarget()!.id!);
+      await this.api.deleteUser(this.deleteTarget()!.id!);
       this.toast.success('Usuario eliminado');
       this.showConfirm.set(false);
       await this.load();

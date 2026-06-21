@@ -2,11 +2,11 @@
 import { Injectable } from '@angular/core';
 import { AuthService } from './auth.service';
 import {
-  Usuario,
-  Categoria,
-  Convocatoria,
-  Postulacion,
-  CambioEstadoPostulacion
+  User,
+  Category,
+  Convocation,
+  Postulation,
+  ChangeStatusPostulation
 } from '../models/models';
 
 const API_BASE = 'http://localhost:8080';
@@ -54,37 +54,35 @@ export class ApiService {
     }
   }
 
-  // ===================== USUARIOS =====================
-
-  async getUsuarios(): Promise<Usuario[]> {
+  async getUser(): Promise<User[]> {
     const res = await fetch(`${API_BASE}/api/usuarios`, {
       headers: this.getHeaders()
     });
 
-    return this.handleResponse<Usuario[]>(res);
+    return this.handleResponse<User[]>(res);
   }
 
-  async createUsuario(u: Usuario): Promise<Usuario> {
+  async createUser(u: User): Promise<User> {
     const res = await fetch(`${API_BASE}/api/usuarios`, {
       method: 'POST',
       headers: this.getHeaders(true),
       body: JSON.stringify(u)
     });
 
-    return this.handleResponse<Usuario>(res);
+    return this.handleResponse<User>(res);
   }
 
-  async updateUsuario(id: number, u: Usuario): Promise<Usuario> {
+  async updateUser(id: number, u: User): Promise<User> {
     const res = await fetch(`${API_BASE}/api/usuarios/${id}`, {
       method: 'PUT',
       headers: this.getHeaders(true),
       body: JSON.stringify(u)
     });
 
-    return this.handleResponse<Usuario>(res);
+    return this.handleResponse<User>(res);
   }
 
-  async deleteUsuario(id: number): Promise<void> {
+  async deleteUser(id: number): Promise<void> {
     const res = await fetch(`${API_BASE}/api/usuarios/${id}`, {
       method: 'DELETE',
       headers: this.getHeaders()
@@ -93,45 +91,43 @@ export class ApiService {
     return this.handleVoidResponse(res);
   }
 
-  // ===================== CATEGORIAS =====================
-
-  async getCategorias(): Promise<Categoria[]> {
+  async getCategory(): Promise<Category[]> {
     const res = await fetch(`${API_BASE}/api/categorias`, {
       headers: this.getHeaders()
     });
 
-    return this.handleResponse<Categoria[]>(res);
+    return this.handleResponse<Category[]>(res);
   }
 
-  async getCategoriaById(id: number): Promise<Categoria> {
+  async getCategoryById(id: number): Promise<Category> {
     const res = await fetch(`${API_BASE}/api/categorias/${id}`, {
       headers: this.getHeaders()
     });
 
-    return this.handleResponse<Categoria>(res);
+    return this.handleResponse<Category>(res);
   }
 
-  async createCategoria(c: Categoria): Promise<Categoria> {
+  async createCategory(c: Category): Promise<Category> {
     const res = await fetch(`${API_BASE}/api/categorias`, {
       method: 'POST',
       headers: this.getHeaders(true),
       body: JSON.stringify(c)
     });
 
-    return this.handleResponse<Categoria>(res);
+    return this.handleResponse<Category>(res);
   }
 
-  async updateCategoria(id: number, c: Categoria): Promise<Categoria> {
+  async updateCategory(id: number, c: Category): Promise<Category> {
     const res = await fetch(`${API_BASE}/api/categorias/${id}`, {
       method: 'PUT',
       headers: this.getHeaders(true),
       body: JSON.stringify(c)
     });
 
-    return this.handleResponse<Categoria>(res);
+    return this.handleResponse<Category>(res);
   }
 
-  async deleteCategoria(id: number): Promise<void> {
+  async deleteCategory(id: number): Promise<void> {
     const res = await fetch(`${API_BASE}/api/categorias/${id}`, {
       method: 'DELETE',
       headers: this.getHeaders()
@@ -140,45 +136,43 @@ export class ApiService {
     return this.handleVoidResponse(res);
   }
 
-  // ===================== CONVOCATORIAS =====================
-
-  async getConvocatorias(): Promise<Convocatoria[]> {
+  async getConvocations(): Promise<Convocation[]> {
     const res = await fetch(`${API_BASE}/api/convocatorias`, {
       headers: this.getHeaders()
     });
 
-    return this.handleResponse<Convocatoria[]>(res);
+    return this.handleResponse<Convocation[]>(res);
   }
 
-  async getConvocatoriaById(id: number): Promise<Convocatoria> {
+  async getConvocationById(id: number): Promise<Convocation> {
     const res = await fetch(`${API_BASE}/api/convocatorias/${id}`, {
       headers: this.getHeaders()
     });
 
-    return this.handleResponse<Convocatoria>(res);
+    return this.handleResponse<Convocation>(res);
   }
 
-  async createConvocatoria(c: Convocatoria): Promise<Convocatoria> {
+  async createConvocation(c: Convocation): Promise<Convocation> {
     const res = await fetch(`${API_BASE}/api/convocatorias`, {
       method: 'POST',
       headers: this.getHeaders(true),
       body: JSON.stringify(c)
     });
 
-    return this.handleResponse<Convocatoria>(res);
+    return this.handleResponse<Convocation>(res);
   }
 
-  async updateConvocatoria(id: number, c: Convocatoria): Promise<Convocatoria> {
+  async updateConvocation(id: number, c: Convocation): Promise<Convocation> {
     const res = await fetch(`${API_BASE}/api/convocatorias/${id}`, {
       method: 'PUT',
       headers: this.getHeaders(true),
       body: JSON.stringify(c)
     });
 
-    return this.handleResponse<Convocatoria>(res);
+    return this.handleResponse<Convocation>(res);
   }
 
-  async deleteConvocatoria(id: number): Promise<void> {
+  async deleteConvocation(id: number): Promise<void> {
     const res = await fetch(`${API_BASE}/api/convocatorias/${id}`, {
       method: 'DELETE',
       headers: this.getHeaders()
@@ -187,33 +181,31 @@ export class ApiService {
     return this.handleVoidResponse(res);
   }
 
-  // ===================== POSTULACIONES =====================
-
-  async getPostulaciones(): Promise<Postulacion[]> {
+  async getPostulation(): Promise<Postulation[]> {
     const res = await fetch(`${API_BASE}/api/postulaciones`, {
       headers: this.getHeaders()
     });
 
-    return this.handleResponse<Postulacion[]>(res);
+    return this.handleResponse<Postulation[]>(res);
   }
 
-  async createPostulacion(
-    p: { estudianteId: number; convocatoriaId: number }
-  ): Promise<Postulacion> {
+  async createPostulation(
+    p: { estudianteId: number; ConvocationId: number }
+  ): Promise<Postulation> {
 
-    const res = await fetch(`${API_BASE}/api/postulaciones`, {
+    const res = await fetch(`${API_BASE}/api/p  ostulaciones`, {
       method: 'POST',
       headers: this.getHeaders(true),
       body: JSON.stringify(p)
     });
 
-    return this.handleResponse<Postulacion>(res);
+    return this.handleResponse<Postulation>(res);
   }
 
-  async cambiarEstadoPostulacion(
+  async changeStatusPostulation(
     id: number,
-    dto: CambioEstadoPostulacion
-  ): Promise<Postulacion> {
+    dto: ChangeStatusPostulation
+  ): Promise<Postulation> {
 
     const res = await fetch(
       `${API_BASE}/api/postulaciones/${id}/estado`,
@@ -224,7 +216,7 @@ export class ApiService {
       }
     );
 
-    return this.handleResponse<Postulacion>(res);
+    return this.handleResponse<Postulation>(res);
   }
 }
 

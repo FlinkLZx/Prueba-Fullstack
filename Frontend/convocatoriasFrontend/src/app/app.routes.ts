@@ -47,9 +47,9 @@ export const routes: Routes = [
     canActivate: [authGuard],
     children: [
       { path: 'dashboard', loadComponent: () => import('./pages/dashboard/dashboard.component').then(m => m.DashboardComponent) },
-      { path: 'usuarios', loadComponent: () => import('./pages/usuarios/usuarios.component').then(m => m.UsuariosComponent), canActivate: [adminGuard] },
-      { path: 'categorias', loadComponent: () => import('./pages/categorias/categorias.component').then(m => m.CategoriasComponent) },
-      { path: 'convocatorias', loadComponent: () => import('./pages/convocatorias/convocatorias.component').then(m => m.ConvocatoriasComponent) },
+      { path: 'usuarios', loadComponent: () => import('./pages/user/user.component').then(m => m.UserComponent), canActivate: [adminGuard] },
+      { path: 'categorias', loadComponent: () => import('./pages/category/category.component').then(m => m.CategoryComponent) },
+      { path: 'convocatorias', loadComponent: () => import('./pages/convocation/convocation.component').then(m => m.ConvocationsComponent) },
       //{ path: 'postulaciones', loadComponent: () => import('./pages/postulaciones/postulaciones.component').then(m => m.PostulacionesComponent) },
     ]
   },
