@@ -48,7 +48,7 @@ public class PostulationService implements CreatePostulationUseCase, ConsultPost
             throw new IllegalArgumentException("Cannot apply to a convocation that is closed or in draft status");
         }
 
-        if (convocation.getCuposDisponibles() <= 0) {
+        if (convocation.getSpotsAvailable() <= 0) {
             throw new IllegalArgumentException("No spots available for this convocation");
         }
 
@@ -85,15 +85,15 @@ public class PostulationService implements CreatePostulationUseCase, ConsultPost
 
         // If changing status to APROBADA
         if (newStatus == PostulationStatus.APROBADA && currentStatus != PostulationStatus.APROBADA) {
-            if (convocation.getCuposDisponibles() <= 0) {
+            if (convocation.getSpotsAvailable() <= 0) {
                 throw new IllegalArgumentException("No spots available to approve this application");
             }
-            convocation.setCuposDisponibles(convocation.getCuposDisponibles() - 1);
+            convocation.setSpotsAvailable(convocation.getSpotsAvailable() - 1);
             convocatoriaRepositoryPort.update(convocation.getId(), convocation);
         }
         // If changing status from APROBADA to something else
         else if (newStatus != PostulationStatus.APROBADA && currentStatus == PostulationStatus.APROBADA) {
-            convocation.setCuposDisponibles(convocation.getCuposDisponibles() + 1);
+            convocation.setSpotsAvailable(convocation.getSpotsAvailable() + 1);
             convocatoriaRepositoryPort.update(convocation.getId(), convocation);
         }
 
