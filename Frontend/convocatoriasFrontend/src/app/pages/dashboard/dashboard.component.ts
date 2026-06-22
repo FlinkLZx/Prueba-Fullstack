@@ -94,7 +94,7 @@ import { Convocation, Postulation } from '../../models/models';
                       <span>{{ conv.startDate }} → {{ conv.finishDate }}</span>
                     </div>
                     <div class="conv-meta">
-                      <span>{{ conv.slotsAvailable }} cupos disponibles</span>
+                      <span>{{ conv.spotsAvailable }} cupos disponibles</span>
                     </div>
                   </div>
                   <div class="conv-card-footer">
