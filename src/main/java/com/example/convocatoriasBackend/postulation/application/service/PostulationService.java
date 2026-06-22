@@ -18,29 +18,28 @@ import java.util.Optional;
 
 public class PostulationService implements CreatePostulationUseCase, ConsultPostulationUseCase, UpdatePostulationStatusUseCase {
 
-    private final PostulationRepositoryPort repositoryPort;
-    private final ConvocationRepositoryPort convocatoriaRepositoryPort;
+    private final PostulationRepositoryPort postulationRepositoryPort;
+    private final ConvocationRepositoryPort convocationRepositoryPort;
     private final UserRepositoryPort userRepositoryPort;
 
-    public PostulationService(PostulationRepositoryPort repositoryPort,
-                              ConvocationRepositoryPort convocatoriaRepositoryPort,
+    public PostulationService(PostulationRepositoryPort postulationRepositoryPort,
+                              ConvocationRepositoryPort convocationRepositoryPort,
                               UserRepositoryPort userRepositoryPort) {
-        this.repositoryPort = repositoryPort;
-        this.convocatoriaRepositoryPort = convocatoriaRepositoryPort;
+        this.postulationRepositoryPort = postulationRepositoryPort;
+        this.convocationRepositoryPort = convocationRepositoryPort;
         this.userRepositoryPort = userRepositoryPort;
     }
 
     @Override
     public Postulation createPostulation(Postulation postulation) throws IllegalAccessException {
-        // Validate user exists
+
         User student = userRepositoryPort.findById(postulation.getStudent().getId())
                 .orElseThrow(() -> new IllegalArgumentException("Student not found"));
 
-        // Validate convocatoria exists
-        Convocation convocation = convocatoriaRepositoryPort.findById(postulation.getConvocation().getId())
+        Convocation convocation = convocationRepositoryPort.findById(postulation.getConvocation().getId())
                 .orElseThrow(() -> new IllegalArgumentException("Convocation not found"));
 
-        if (repositoryPort.findByStudentIdAndConvocationId(student.getId(), convocation.getId()).isPresent()) {
+        if (postulationRepositoryPort.findByStudentIdAndConvocationId(student.getId(), convocation.getId()).isPresent()) {
             throw new IllegalArgumentException("You have already applied to this convocation");
         }
 
@@ -57,22 +56,22 @@ public class PostulationService implements CreatePostulationUseCase, ConsultPost
         postulation.setPostulationDate(LocalDateTime.now());
         postulation.setStatus(PostulationStatus.PENDIENTE);
 
-        return repositoryPort.save(postulation);
+        return postulationRepositoryPort.save(postulation);
     }
 
     @Override
     public List<Postulation> listAll() {
-        return repositoryPort.findAll();
+        return postulationRepositoryPort.findAll();
     }
 
     @Override
     public Optional<Postulation> findById(Long id) {
-        return repositoryPort.findById(id);
+        return postulationRepositoryPort.findById(id);
     }
 
     @Override
     public Postulation updateStatus(Long id, PostulationStatus newStatus) {
-        Postulation existing = repositoryPort.findById(id)
+        Postulation existing = postulationRepositoryPort.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Postulation not found with id " + id));
 
         PostulationStatus currentStatus = existing.getStatus();
@@ -83,21 +82,20 @@ public class PostulationService implements CreatePostulationUseCase, ConsultPost
 
         Convocation convocation = existing.getConvocation();
 
-        // If changing status to APROBADA
         if (newStatus == PostulationStatus.APROBADA && currentStatus != PostulationStatus.APROBADA) {
             if (convocation.getSpotsAvailable() <= 0) {
                 throw new IllegalArgumentException("No spots available to approve this application");
             }
             convocation.setSpotsAvailable(convocation.getSpotsAvailable() - 1);
-            convocatoriaRepositoryPort.update(convocation.getId(), convocation);
+            convocationRepositoryPort.update(convocation.getId(), convocation);
         }
-        // If changing status from APROBADA to something else
+
         else if (newStatus != PostulationStatus.APROBADA && currentStatus == PostulationStatus.APROBADA) {
             convocation.setSpotsAvailable(convocation.getSpotsAvailable() + 1);
-            convocatoriaRepositoryPort.update(convocation.getId(), convocation);
+            convocationRepositoryPort.update(convocation.getId(), convocation);
         }
 
         existing.setStatus(newStatus);
-        return repositoryPort.save(existing);
+        return postulationRepositoryPort.save(existing);
     }
 }
