@@ -1,4 +1,3 @@
-// src/app/pages/login/login.component.ts
 import { Component, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -16,7 +15,7 @@ import { ToastService } from '../../services/toast.service';
       <div class="login-left">
         <div class="login-left-content">
           <div class="login-logo-wrapper">
-            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/bd/Logo_de_la_Universidad_Surcolombiana.svg/200px-Logo_de_la_Universidad_Surcolombiana.svg.png"
+            <img src="/USCO_Logo.png"
                  alt="Logo Universidad Surcolombiana"
                  onerror="this.src=''; this.alt='USCO';">
           </div>
