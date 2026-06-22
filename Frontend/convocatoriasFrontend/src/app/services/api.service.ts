@@ -29,26 +29,28 @@ export class ApiService {
   }
 
   private async handleResponse<T>(res: Response): Promise<T> {
-    if (!res.ok) {
-      const err = await res.json().catch(() => ({}));
+    const text = await res.text();
+    const data = text ? JSON.parse(text) : null;
 
+    if (!res.ok) {
       throw new Error(
-        err.message ||
-        err.error ||
+        data?.message ||
+        data?.error ||
         `Error ${res.status}: ${res.statusText}`
       );
     }
 
-    return await res.json() as T;
+    return data as T;
   }
 
   private async handleVoidResponse(res: Response): Promise<void> {
     if (!res.ok) {
-      const err = await res.json().catch(() => ({}));
+      const text = await res.text();
+      const data = text ? JSON.parse(text) : null;
 
       throw new Error(
-        err.message ||
-        err.error ||
+        data?.message ||
+        data?.error ||
         `Error ${res.status}: ${res.statusText}`
       );
     }
@@ -190,7 +192,7 @@ export class ApiService {
   }
 
   async createPostulation(
-    p: { estudianteId: number; ConvocationId: number }
+    p: { studentId: number; convocationId: number }
   ): Promise<Postulation> {
 
     const res = await fetch(`${API_BASE}/api/postulaciones`, {
@@ -219,4 +221,3 @@ export class ApiService {
     return this.handleResponse<Postulation>(res);
   }
 }
-
