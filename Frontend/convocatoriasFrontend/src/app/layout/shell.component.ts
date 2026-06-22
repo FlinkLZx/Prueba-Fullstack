@@ -14,7 +14,7 @@ import { CommonModule } from '@angular/common';
       <aside class="sidebar">
         <div class="sidebar-header">
           <div class="sidebar-logo">
-            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/bd/Logo_de_la_Universidad_Surcolombiana.svg/200px-Logo_de_la_Universidad_Surcolombiana.svg.png"
+            <img src="/USCO_Logo.png"
                  alt="USCO Logo"
                  onerror="this.src=''; this.alt='USCO';">
             <div class="sidebar-logo-text">
