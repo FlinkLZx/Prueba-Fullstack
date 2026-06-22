@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { ApiService } from '../../services/api.service';
+import { ToastService } from '../../services/toast.service';
 import { Convocation, Postulation } from '../../models/models';
 
 @Component({
@@ -97,10 +98,14 @@ import { Convocation, Postulation } from '../../models/models';
                       <span>{{ conv.spotsAvailable }} cupos disponibles</span>
                     </div>
                   </div>
-                  <div class="conv-card-footer">
+                  <div class="conv-card-footer" style="display:flex; justify-content:space-between; align-items:center;">
                     @if (auth.isEstudiante()) {
                       <span class="text-xs text-muted">ID: {{ conv.id }}</span>
-                      <a routerLink="/postulaciones" class="btn btn-primary btn-sm">Postularse</a>
+                      <button class="btn btn-primary btn-sm"
+                              (click)="postularse(conv)"
+                              [disabled]="conv.spotsAvailable <= 0 || savingPostulation()">
+                        @if (savingPostulation()) { Postulando... } @else { Postularme }
+                      </button>
                     } @else {
                       <span class="text-xs text-muted">ID: {{ conv.id }}</span>
                       <a routerLink="/convocatorias" class="btn btn-secondary btn-sm">Ver detalles</a>
@@ -154,10 +159,12 @@ import { Convocation, Postulation } from '../../models/models';
 export class DashboardComponent implements OnInit {
   readonly auth = inject(AuthService);
   private api = inject(ApiService);
+  private toast = inject(ToastService);
 
   convocatorias = signal<Convocation[]>([]);
   postulaciones = signal<Postulation[]>([]);
   loading = signal(true);
+  savingPostulation = signal(false);
 
   get publicadas() { return () => this.convocatorias().filter(c => c.status === 'PUBLICADA').length; }
   get aprobadas() { return () => this.postulaciones().filter(p => p.status === 'APROBADA').length; }
@@ -183,6 +190,47 @@ export class DashboardComponent implements OnInit {
       // silently ignore
     } finally {
       this.loading.set(false);
+    }
+  }
+
+  async postularse(convocatoria: Convocation) {
+    const convocationId = convocatoria.id;
+
+    if (!convocationId) {
+      this.toast.error('No se pudo identificar la convocatoria.');
+      return;
+    }
+
+    const authState = this.auth as any;
+    const estudianteId = authState.currentUser?.().id ||
+      authState.user?.id ||
+      authState.session?.user?.id ||
+      1;
+
+    this.savingPostulation.set(true);
+    try {
+      await this.api.createPostulation({
+        studentId: estudianteId,
+        convocationId: convocationId
+      });
+
+      this.toast.success('¡Te has postulado correctamente a la convocatoria!');
+
+      // Refresca las convocatorias para reflejar el cambio en cupos disponibles
+      const convs = await this.api.getConvocations();
+      this.convocatorias.set(convs);
+    } catch (e: any) {
+      const errorMessage = e.error?.message || e.message || '';
+
+      if (errorMessage.includes('already applied') || (e.status === 400 && errorMessage.includes('ya se postuló'))) {
+        this.toast.warning('Ya te encuentras postulado a esta convocatoria.');
+      } else if (errorMessage.includes('No spots available')) {
+        this.toast.error('Ya no quedan cupos disponibles para esta convocatoria.');
+      } else {
+        this.toast.error(errorMessage || 'No se pudo procesar la postulación.');
+      }
+    } finally {
+      this.savingPostulation.set(false);
     }
   }
 }

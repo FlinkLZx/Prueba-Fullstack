@@ -32,7 +32,6 @@ const EMPTY_CONV = (): Convocation => ({
         }
       </div>
 
-      <!-- Toolbar -->
       <div class="toolbar">
         <div class="search-input-wrapper">
           <span class="search-icon"></span>
@@ -48,7 +47,6 @@ const EMPTY_CONV = (): Convocation => ({
         </select>
       </div>
 
-      <!-- Stats row -->
       <div class="stats-grid" style="margin-bottom:1.5rem;">
         <div class="stat-card">
           <div class="stat-card-value">{{ convocation().length }}</div>
@@ -85,7 +83,6 @@ const EMPTY_CONV = (): Convocation => ({
           </div>
         </div>
       } @else if (viewMode() === 'cards') {
-        <!-- Cards view -->
         <div class="conv-grid">
           @for (conv of filtered(); track conv.id) {
             <div class="conv-card">
@@ -115,20 +112,28 @@ const EMPTY_CONV = (): Convocation => ({
                   </div>
                 }
               </div>
-              <div class="conv-card-footer">
+              <div class="conv-card-footer" style="display:flex; justify-content:space-between; align-items:center;">
                 <span class="td-mono" style="font-size:0.7rem;">ID: {{ conv.id }}</span>
+                
                 @if (auth.isAdmin()) {
                   <div style="display:flex; gap:6px;">
                     <button class="btn btn-secondary btn-sm" (click)="openEdit(conv)">Editar</button>
                     <button class="btn btn-ghost btn-sm" (click)="confirmDelete(conv)">Eliminar</button>
                   </div>
                 }
+
+                @if (canPostulate()) {
+                  <button class="btn btn-primary btn-sm" 
+                          (click)="postularse(conv)"
+                          [disabled]="conv.spotsAvailable <= 0 || conv.status !== 'PUBLICADA' || savingPostulation()">
+                    Postularme
+                  </button>
+                }
               </div>
             </div>
           }
         </div>
       } @else {
-        <!-- Table view -->
         <div class="card">
           <div class="card-header">
             <div class="card-title">Lista de convocatorias</div>
@@ -145,7 +150,7 @@ const EMPTY_CONV = (): Convocation => ({
                   <th>Fin</th>
                   <th>Cupos</th>
                   <th>Categorías</th>
-                  @if (auth.isAdmin()) { <th>Acciones</th> }
+                  <th>Acciones</th>
                 </tr>
               </thead>
               <tbody>
@@ -170,14 +175,22 @@ const EMPTY_CONV = (): Convocation => ({
                         </div>
                       } @else { <span class="text-muted text-xs">—</span> }
                     </td>
-                    @if (auth.isAdmin()) {
-                      <td>
-                        <div style="display:flex; gap:4px;">
+                    <td>
+                      <div style="display:flex; gap:4px;">
+                        @if (auth.isAdmin()) {
                           <button class="btn btn-ghost btn-sm" (click)="openEdit(conv)">Editar</button>
                           <button class="btn btn-ghost btn-sm" (click)="confirmDelete(conv)">Eliminar</button>
-                        </div>
-                      </td>
-                    }
+                        }
+                        
+                        @if (canPostulate()) {
+                          <button class="btn btn-primary btn-sm" 
+                                  (click)="postularse(conv)"
+                                  [disabled]="conv.spotsAvailable <= 0 || conv.status !== 'PUBLICADA' || savingPostulation()">
+                            Postularme
+                          </button>
+                        }
+                      </div>
+                    </td>
                   </tr>
                 }
               </tbody>
@@ -187,7 +200,6 @@ const EMPTY_CONV = (): Convocation => ({
       }
     </div>
 
-    <!-- Create/Edit Modal -->
     @if (showModal()) {
       <div class="modal-overlay" (click)="closeModal()">
         <div class="modal modal-lg" (click)="$event.stopPropagation()">
@@ -269,7 +281,6 @@ const EMPTY_CONV = (): Convocation => ({
       </div>
     }
 
-    <!-- Confirm Delete Modal -->
     @if (showConfirm()) {
       <div class="modal-overlay" (click)="showConfirm.set(false)">
         <div class="modal" style="max-width:420px;" (click)="$event.stopPropagation()">
@@ -304,6 +315,7 @@ export class ConvocationsComponent implements OnInit {
   categories = signal<Category[]>([]);
   loading = signal(true);
   saving = signal(false);
+  savingPostulation = signal(false);
   showModal = signal(false);
   showConfirm = signal(false);
   editingId = signal<number | null>(null);
@@ -448,6 +460,62 @@ export class ConvocationsComponent implements OnInit {
       this.toast.error(e.message);
     } finally {
       this.saving.set(false);
+    }
+  }
+
+  canPostulate(): boolean {
+    const authState = this.auth as any;
+
+    if (authState.isAdmin?.()) {
+      return false;
+    }
+
+    if (authState.isEstudiante) return authState.isEstudiante();
+    if (authState.isStudent) return authState.isStudent();
+
+    return true;
+  }
+
+  async postularse(convocatoria: Convocation) {
+    console.log('¡Botón presionado con éxito!', convocatoria);
+    const convocationId = convocatoria.id;
+
+    if (!convocationId) {
+      this.toast.error('No se pudo identificar la convocatoria.');
+      return;
+    }
+
+    const authState = this.auth as any;
+
+    const estudianteId = authState.currentUser?.().id ||
+      authState.user?.id ||
+      authState.session?.user?.id ||
+      1;
+
+    this.savingPostulation.set(true);
+    try {
+
+      await this.api.createPostulation({
+        studentId: estudianteId,
+        convocationId: convocationId
+      });
+
+      this.toast.success('¡Te has postulado correctamente a la convocatoria!');
+      await this.load();
+    } catch (e: any) {
+      console.error(e);
+      const errorMessage = e.error?.message || e.message || '';
+
+      if (errorMessage.includes('already applied') || (e.status === 400 && errorMessage.includes('ya se postuló'))) {
+        this.toast.warning('Ya te encuentras postulado a esta convocatoria.');
+      } else if (errorMessage.includes('No spots available')) {
+        this.toast.error('Ya no quedan cupos disponibles para esta convocatoria.');
+      } else {
+
+        this.toast.error(errorMessage || 'No se pudo procesar la postulación.');
+      }
+    } finally {
+      this.savingPostulation.set(false);
     }
   }
 }
