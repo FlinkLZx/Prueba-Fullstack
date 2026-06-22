@@ -22,15 +22,6 @@ import { ToastService } from '../../services/toast.service';
           <h1>Universidad Surcolombiana</h1>
           <p>Sistema de gestión de convocatorias institucionales. Plataforma oficial para el proceso de postulaciones académicas.</p>
           <div style="margin-top: 2rem; display:flex; flex-direction:column; gap:0.75rem;">
-            <div style="display:flex; align-items:center; gap:0.75rem; color:rgba(255,255,255,0.9); font-size:0.85rem;">
-              Gestión de convocatorias
-            </div>
-            <div style="display:flex; align-items:center; gap:0.75rem; color:rgba(255,255,255,0.9); font-size:0.85rem;">
-              Postulaciones en línea
-            </div>
-            <div style="display:flex; align-items:center; gap:0.75rem; color:rgba(255,255,255,0.9); font-size:0.85rem;">
-              Acceso seguro con JWT
-            </div>
           </div>
         </div>
       </div>
