@@ -103,7 +103,7 @@ const EMPTY_CONV = (): Convocation => ({
                   <span>{{ conv.startDate }} → {{ conv.finishDate }}</span>
                 </div>
                 <div class="conv-meta">
-                  <span><strong>{{ conv.slotsAvailable }}</strong> cupos disponibles</span>
+                  <span><strong>{{ conv.spotsAvailable }}</strong> cupos disponibles</span>
                 </div>
                 @if (conv.categories && conv.categories.length > 0) {
                   <div style="display:flex; flex-wrap:wrap; gap:4px; margin-top:4px;">
@@ -158,7 +158,7 @@ const EMPTY_CONV = (): Convocation => ({
                     <td><span class="status-chip {{ statusChip(conv.status) }}">{{ conv.status }}</span></td>
                     <td class="text-sm text-secondary">{{ conv.startDate }}</td>
                     <td class="text-sm text-secondary">{{ conv.finishDate }}</td>
-                    <td style="font-weight:600; color:var(--color-primary);">{{ conv.slotsAvailable }}</td>
+                    <td style="font-weight:600; color:var(--color-primary);">{{ conv.spotsAvailable }}</td>
                     <td>
                       @if (conv.categories?.length) {
                         <div style="display:flex; flex-wrap:wrap; gap:3px;">
@@ -226,7 +226,7 @@ const EMPTY_CONV = (): Convocation => ({
                 <div class="form-group">
                   <label class="form-label required" for="cCupos">Cupos disponibles</label>
                   <input id="cCupos" name="slotsAvailable" type="number" class="form-control"
-                         [(ngModel)]="form.slotsAvailable" min="1" required>
+                         [(ngModel)]="form.spotsAvailable" min="1" required>
                 </div>
                 <div class="form-group">
                   <label class="form-label required" for="cstatus">status</label>

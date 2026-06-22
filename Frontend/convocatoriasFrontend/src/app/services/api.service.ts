@@ -193,7 +193,7 @@ export class ApiService {
     p: { estudianteId: number; ConvocationId: number }
   ): Promise<Postulation> {
 
-    const res = await fetch(`${API_BASE}/api/p  ostulaciones`, {
+    const res = await fetch(`${API_BASE}/api/postulaciones`, {
       method: 'POST',
       headers: this.getHeaders(true),
       body: JSON.stringify(p)
